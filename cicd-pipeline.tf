@@ -69,7 +69,7 @@ resource "aws_codepipeline" "cicd_pipeline" {
             version = "1"
             output_artifacts = ["tf-code"]
             configuration = {
-                FullRepositoryId = "didilmfs/aws-cicd-pipeline"
+                FullRepositoryId = "didilmfs/learn-aws-cicd"
                 BranchName   = "master"
                 ConnectionArn = var.codestar_connector_credentials
                 OutputArtifactFormat = "CODE_ZIP"
