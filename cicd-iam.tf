@@ -21,7 +21,7 @@ EOF
 data "aws_iam_policy_document" "tf-cicd-pipeline-policies" {
   statement{
     sid = ""
-    actions = ["codestar-connections:UserConnection"]
+    actions = ["codestar-connections:*"]
     resources = ["*"]
     effect = "Allow"
   }
