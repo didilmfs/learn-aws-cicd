@@ -3,8 +3,8 @@ resource "aws_codebuild_project" "tf-plan" {
   description   = "Plan stage for terraform"
   service_role  = aws_iam_role.tf-codebuild-role.arn
 
-  artifacts {
-    type = "CODEPIPELINE"
+ artifacts {
+    type = "NO_ARTIFACTS"
   }
 
   environment {
@@ -18,7 +18,8 @@ resource "aws_codebuild_project" "tf-plan" {
     }
  }
  source {
-     type   = "CODEPIPELINE"
+     type   = "GITHUB"
+     location = "https://github.com/didilmfs/learn-aws-cicd"
      buildspec = file("buildspec/plan-buildspec.yml")
  }
 }
@@ -28,8 +29,8 @@ resource "aws_codebuild_project" "tf-apply" {
   description   = "Apply stage for terraform"
   service_role  = aws_iam_role.tf-codebuild-role.arn
 
-  artifacts {
-    type = "CODEPIPELINE"
+ artifacts {
+    type = "NO_ARTIFACTS"
   }
 
   environment {
@@ -43,7 +44,8 @@ resource "aws_codebuild_project" "tf-apply" {
     }
  }
  source {
-     type   = "CODEPIPELINE"
+     type   = "GITHUB"
+     location = "https://github.com/didilmfs/learn-aws-cicd"
      buildspec = file("buildspec/apply-buildspec.yml")
  }
 }
