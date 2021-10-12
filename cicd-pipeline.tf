@@ -108,3 +108,36 @@ resource "aws_codepipeline" "cicd_pipeline" {
     }
 
 }
+
+
+resource "aws_codebuild_webhook" "cicd-plan-webhook" {
+  project_name = aws_codebuild_project.tf-plan.name
+  build_type   = "BUILD"
+  filter_group {
+    filter {
+      type    = "EVENT"
+      pattern = "PULL_REQUEST_CREATED,PULL_REQUEST_UPDATED,PULL_REQUEST_REOPENED"
+    }
+
+    filter {
+      type    = "BASE_REF"
+      pattern = "refs/heads/master"
+    }
+  }
+}
+
+resource "aws_codebuild_webhook" "cicd-apply-webhook" {
+  project_name = aws_codebuild_project.tf-apply.name
+  build_type   = "BUILD"
+  filter_group {
+    filter {
+      type    = "EVENT"
+      pattern = "PUSH"
+    }
+
+    filter {
+      type    = "HEAD_REF"
+      pattern = "refs/heads/master"
+    }
+  }
+}
