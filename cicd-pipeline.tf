@@ -3,8 +3,9 @@ resource "aws_codebuild_project" "tf-plan" {
   description   = "Plan stage for terraform"
   service_role  = aws_iam_role.tf-codebuild-role.arn
 
- artifacts {
-    type = "NO_ARTIFACTS"
+  artifacts {
+    type="S3"
+    location = aws_s3_bucket.codepipeline_artifacts.id
   }
 
   environment {
@@ -29,8 +30,9 @@ resource "aws_codebuild_project" "tf-apply" {
   description   = "Apply stage for terraform"
   service_role  = aws_iam_role.tf-codebuild-role.arn
 
- artifacts {
-    type = "NO_ARTIFACTS"
+  artifacts {
+    type="S3"
+    location = aws_s3_bucket.codepipeline_artifacts.id
   }
 
   environment {
@@ -48,67 +50,6 @@ resource "aws_codebuild_project" "tf-apply" {
      location = "https://github.com/didilmfs/learn-aws-cicd"
      buildspec = file("buildspec/apply-buildspec.yml")
  }
-}
-
-
-resource "aws_codepipeline" "cicd_pipeline" {
-
-    name = "tf-cicd"
-    role_arn = aws_iam_role.tf-codepipeline-role.arn
-
-    artifact_store {
-        type="S3"
-        location = aws_s3_bucket.codepipeline_artifacts.id
-    }
-
-    stage {
-        name = "Source"
-        action{
-            name = "Source"
-            category = "Source"
-            owner = "AWS"
-            provider = "CodeStarSourceConnection"
-            version = "1"
-            output_artifacts = ["tf-code"]
-            configuration = {
-                FullRepositoryId = "didilmfs/learn-aws-cicd"
-                BranchName   = "master"
-                ConnectionArn = var.codestar_connector_credentials
-                OutputArtifactFormat = "CODE_ZIP"
-            }
-        }
-    }
-
-    stage {
-        name ="Plan"
-        action{
-            name = "Build"
-            category = "Build"
-            provider = "CodeBuild"
-            version = "1"
-            owner = "AWS"
-            input_artifacts = ["tf-code"]
-            configuration = {
-                ProjectName = "tf-cicd-plan"
-            }
-        }
-    }
-
-    stage {
-        name ="Deploy"
-        action{
-            name = "Deploy"
-            category = "Build"
-            provider = "CodeBuild"
-            version = "1"
-            owner = "AWS"
-            input_artifacts = ["tf-code"]
-            configuration = {
-                ProjectName = "tf-cicd-apply"
-            }
-        }
-    }
-
 }
 
 
